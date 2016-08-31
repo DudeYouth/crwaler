@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+</head>
+
+<body>
+    <h1 id="context">
+
+    </h1>
+    <script src="js/socket.io.js"></script>
+    <script>
+        var socket = io.connect();
+        socket.on("message", function(time) {
+            document.getElementById("context").innerText = time;
+        })
+    </script>
+</body>
+
+</html>
