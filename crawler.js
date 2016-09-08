@@ -80,7 +80,6 @@ function crawlerContent($) {
     let attrElement = $(".zj_cp_r .cp_data li");
     let specElement = $(".zj_con");
     let imagesElement = $(".cx_list .gscp_u img");
-    data.id = countId++;
     data.spec = [];
     data.images = [];
     data.name = $(".zj_cp_r h1").text().trim();
