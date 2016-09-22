@@ -1,2 +1,7 @@
 /node_modules/*
+<<<<<<< HEAD
 /server/*
+=======
+/server/*
+/js/*
+>>>>>>> 87e9e1e1844e216fcd21444da0c0a0a687829dc5
