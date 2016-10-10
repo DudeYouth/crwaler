@@ -3,21 +3,23 @@ let fs = require("fs");
 let http = require("http");
 let cheerio = require("cheerio");
 let htmlText = "";
+let i = 1;
 class Crawler {
     constructor(main, timer, callback) {
             this.main = main;
             this.requestList = []; //请求队列   缓存所有的请求方法
             this.callbackList = []; //回调方法队列   缓存所有的回调方法
             this.count = 0; //计数器
+            this.length = 0;
             this.timer = timer;
             //发出第一个请求
             this.request(main, ($) => {
-                fs.writeFile(this.fileName, "[", (err) => {}); //写入数组头
-                this.callbackList.shift()($); //执行第一个回调方法
+                this.callbackList[0]($); //执行第一个回调方法
             });
         }
         //请求方法
     request(requestUrl, callback) {
+        console.log(i++)
         http.get(requestUrl, (res) => {
             let htmlText = "";
             res.on("data", (chunk) => {
@@ -47,8 +49,9 @@ class Crawler {
         })
     }
     find(element, callback) { //查找接口
+        var count = ++this.count;
         this.callbackList.push(($) => { //回调方法入栈
-            this.findUrl($, element, callback);
+            this.findUrl($, element, callback, count);
         })
         return this;
     }
@@ -72,8 +75,8 @@ class Crawler {
             }
         }
     }
-    findUrl($, element, callback) { //生成请求队列接口
-        let next = this.callbackList.shift();
+    findUrl($, element, callback, count) { //生成请求队列接口
+        let next = this.callbackList[count];
         if (typeof $ == "function") { //抓取页面
             $(element).each((index, value) => {
                 this.pushList($, element, value, callback, next);
@@ -90,13 +93,13 @@ class Crawler {
             let param = callback ? callback(value) : $(value).attr("href"); //处理请求链接，如果没有设置回调函数处理则当作a标签处理
             let requestUrl = ""; //请求链接
             let count = 0;
+            let arr = [];
             if (!param.request || !param.callback) { //如果回调函数返回的配置没有对象含有request与callback，则视为普通请求处理，如果复合要求则当作并行请求处理
                 requestUrl = param;
             } else {
                 requestUrl = param.request;
             }
             if (requestUrl instanceof Array) { //并行请求处理
-                let arr = [];
                 requestUrl.forEach((value) => {
                     this.request(value, (_$) => {
                         arr.push(_$);
